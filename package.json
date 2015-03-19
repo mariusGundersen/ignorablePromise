@@ -15,9 +15,10 @@
   "author": "ForbesLindesay",
   "license": "MIT",
   "devDependencies": {
-    "promises-aplus-tests": "*",
     "better-assert": "*",
-    "mocha": "*"
+    "mocha": "*",
+    "promises-aplus-tests": "*",
+    "standard": "^2.11.0"
   },
   "dependencies": {
     "asap": "~2.0.1"
