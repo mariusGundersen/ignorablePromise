@@ -33,22 +33,50 @@ describe('ignore-tests', function () {
     assert(true);
   })
   
-  describe('dont ignoring a promise', function () {
+  describe('ignore a promise', function () {
     it('that is already resolved', function (done) {
-      var a = new Promise(function(resolve){resolve()});
+      var a = Promise.resolve(1);
       a.ignore();
       a.then(function(){
-        assert(true);
-        done()
+        done(false);
       })
+      setTimeout(done, 100);
     })
     it('that is already rejected', function (done) {
-      var a = new Promise(function(resolve, reject){reject()});
+      var a = Promise.reject();
       a.ignore();
       a.catch(function(){
-        assert(true);
-        done()
+        done(false);
       })
+      setTimeout(done, 100);
+    })
+  })
+  
+  describe('when ignored', function () {
+    it('the following thens should not resolve', function (done) {
+      var resolve;
+      var a = new Promise(function(r){resolve = r});
+      a.then(function(){
+        assert(true);
+        a.ignore();
+        a.then(function(){
+          done(false);
+        });
+        done();
+      });
+      resolve();
+    })
+    it('a resolved promise should fulfill thens added before the ignore but not after', function (done) {
+      var a = Promise.resolve(true);
+      a.then(function(r){
+        assert(r);
+        done();
+      });
+      a.ignore();
+      a.then(function(){
+        console.log('oh noes');
+        done(false);
+      });
     })
   })
   describe('ignoring a promise', function () {
@@ -57,7 +85,7 @@ describe('ignore-tests', function () {
       var a = new Promise(function(r){resolve = r});
       a.ignore();
       a.then(function(){
-        assert(false);
+        done(false);
       });
       resolve();
       setTimeout(done, 100);
@@ -67,7 +95,7 @@ describe('ignore-tests', function () {
       var a = new Promise(function(_, r){reject = r});
       a.ignore();
       a.catch(function(){
-        assert(false);
+        done(false);
       });
       reject();
       setTimeout(done, 100);
